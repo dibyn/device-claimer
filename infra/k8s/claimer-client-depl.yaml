@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claimer-client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claimer-client
+  template:
+    metadata:
+      labels:
+        app: claimer-client
+    spec:
+      containers:
+      - name: claimer-client
+        image: dibyn7/claimer-client
+        # resources:
+        #   limits:
+        #     memory: "128Mi"
+        #     cpu: "500m"
+        # ports:
+        # - containerPort: <Port>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claimer-client-srv
+spec:
+  selector:
+    app: claimer-client
+  ports:
+  - name: claimer-client
+    protocol: TCP
+    port: 3000
+    targetPort: 3000

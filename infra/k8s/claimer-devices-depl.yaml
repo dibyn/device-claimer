@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claimer-devices-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claimer-devices
+  template:
+    metadata:
+      labels:
+        app: claimer-devices
+    spec:
+      containers:
+      - name: claimer-devices
+        image: dibyn7/claimer-devices
+        # resources:
+        #   limits:
+        #     memory: "128Mi"
+        #     cpu: "500m"
+        env:
+          - name: MONGO_URI
+            value: mongodb://claimer-devices-mongo-srv:27017/devices
+          - name: JWT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: JWT_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claimer-devices-srv
+spec:
+  selector:
+    app: claimer-devices
+  ports:
+  - name: claimer-devices
+    protocol: TCP
+    port: 3012
+    targetPort: 3012

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claimer-auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claimer-auth
+  template:
+    metadata:
+      labels:
+        app: claimer-auth
+    spec:
+      containers:
+        - name: claimer-auth
+          image: dibyn7/claimer-auth
+          env:
+            - name: MONGO_URI
+              value: mongodb://claimer-auth-mongo-srv:27017/claimer-auth
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claimer-auth-srv
+spec:
+  selector:
+    app: claimer-auth
+  ports:
+    - name: claimer-auth
+      protocol: TCP
+      port: 3012
+      targetPort: 3012
